@@ -9,16 +9,11 @@
 <body>
   <main id="app"></main>
 
-  <script src="model.js"></script>
-  <script src="controller.js"></script>
-  <script src="view.js"></script>
+  <script src="js/model.js"></script>
+  <script src="js/controller.js"></script>
+  <script src="js/view.js"></script>
   <script>
-    // Startlogikk ved lasting
-    if (hasBackupWithAnwers()) {
-      const fortsett = confirm("Det finnes en lagret test. Vil du fortsette der du slapp?");
-      if (!fortsett) restart();
-    }
-    render();
+    renderStart();
   </script>
 </body>
 </html>

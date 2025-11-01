@@ -1,0 +1,59 @@
+body {
+  font-family: system-ui, sans-serif;
+  background: #f8f9fa;
+  margin: 0;
+  padding: 0;
+  color: #222;
+}
+
+main {
+  max-width: 700px;
+  margin: 40px auto;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  padding: 2rem;
+}
+
+h1, h2, h3 {
+  text-align: center;
+}
+
+button {
+  display: inline-block;
+  margin: 0.5rem;
+  padding: 0.8rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  background-color: #1976d2;
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #125a9c;
+}
+
+.option {
+  display: block;
+  padding: 1rem;
+  margin: 1rem 0;
+  background: #e9ecef;
+  border-radius: 8px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.option:hover {
+  background: #dee2e6;
+}
+
+.summary {
+  text-align: center;
+}
+
+.trait-result {
+  font-size: 1.2rem;
+  margin: 0.5rem 0;
+}
