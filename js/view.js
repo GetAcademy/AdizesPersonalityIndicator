@@ -1,5 +1,14 @@
 // view.js
 
+function _fmt(ts) {
+  if (!ts) return "ukjent tidspunkt";
+  try {
+    return new Date(ts).toLocaleString('no-NO');
+  } catch(e) {
+    return ts;
+  }
+}
+
 // Vises først når man laster siden
 function renderStart() {
   const app = document.getElementById("app");
@@ -8,13 +17,32 @@ function renderStart() {
   let html = `
     <h1>Adizes personlighetstest</h1>
     <p>Testen måler fire roller i Adizes-modellen: Produsent (P), Administrator (A), Entreprenør (E) og Integrator (I).</p>
-    <p>For hvert spørsmål velger du mellom to utsagn som passer best på deg.</p>
+    <p>For hvert spørsmål velger du mellom to utsagn som passer best.</p>
     <div style="text-align:center;margin-top:2rem;">
       <button onclick="startNewTest()">Start ny test</button>
   `;
 
   if (hasBackup) {
-    html += `<button onclick="continueTest()">Fortsett der du slapp</button>`;
+    const backup = readBackup();
+    const answeredCount = backup.answers.filter(v => v === 0 || v === 1).length;
+    const total = model.questions.length;
+    const allAnswered = answeredCount >= total && backup.answers.every(v => v === 0 || v === 1);
+    const lastTs = backup.completedAt || backup.lastAnsweredAt;
+
+    if (allAnswered) {
+      // Gå rett til resultat
+      model.appState = {
+        currentIndex: total,
+        answers: backup.answers || [],
+        lastAnsweredAt: backup.lastAnsweredAt,
+        completedAt: backup.completedAt
+      };
+      render();
+      return;
+    } else {
+      html += `<button onclick="continueTest()">Fortsett der du slapp</button>`;
+      html += `<p style="margin-top:1rem;">Du har besvart <b>${answeredCount}</b> av <b>${total}</b> spørsmål. Siste svar: <b>${_fmt(lastTs)}</b>.</p>`;
+    }
   }
 
   html += `</div>`;
@@ -34,7 +62,9 @@ function continueTest() {
   }
   model.appState = {
     currentIndex: backup.currentIndex || 0,
-    answers: backup.answers || []
+    answers: backup.answers || [],
+    lastAnsweredAt: backup.lastAnsweredAt,
+    completedAt: backup.completedAt
   };
 
   // Finn første ubesvarte spørsmål
@@ -104,6 +134,9 @@ function renderSummary() {
 
   const sorted = Object.entries(traits).sort((a, b) => b[1] - a[1]);
   const [topTrait] = sorted[0];
+  const total = q.length;
+  const answeredCount = a.filter(v => v === 0 || v === 1).length;
+  const finishedTs = model.appState.completedAt || model.appState.lastAnsweredAt;
 
   const desc = {
     P: "<b>Produsent</b>: Handlingsorientert, praktisk, effektiv og fokusert på resultater. Trives med å få ting gjort og levere konkret verdi.",
@@ -115,8 +148,10 @@ function renderSummary() {
   let html = `
     <h1>Resultat</h1>
     <div class="summary">
+      <p>Du har besvart <b>${answeredCount}</b> av <b>${total}</b> spørsmål.</p>
+      ${finishedTs ? `<p>Sist fullførte svar: <b>${_fmt(finishedTs)}</b></p>` : ""}
       ${sorted.map(([t, val]) => {
-        const percent = Math.round(100 * val / q.length);
+        const percent = Math.round(100 * val / total);
         return `<div class="trait-result">${model.traitDescriptions[t]}: ${val} poeng (${percent}%)</div>`;
       }).join("")}
       <h2>Din mest fremtredende type er: ${model.traitDescriptions[topTrait]}</h2>

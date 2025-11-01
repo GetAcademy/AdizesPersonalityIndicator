@@ -1,11 +1,20 @@
-var STORAGE_KEY = "adizesBackupV2";
+// controller.js (global, ingen moduler/klasser/closure)
+// Forventninger:
+// - Globalt objekt `model` finnes, med `model.appState = { currentIndex: number, answers: number[], lastAnsweredAt?: string, completedAt?: string }`
+// - Global funksjon `render()` finnes (vi kaller den etter hver mutasjon)
+// - Svar lagres som 0/1 i `model.appState.answers[index]`
+// - Backup lagres i localStorage
+
+var STORAGE_KEY = "adizesBackupV3";
 
 function saveBackup() {
   try {
     var state = {
       currentIndex: model && model.appState ? model.appState.currentIndex : 0,
       answers: model && model.appState && Array.isArray(model.appState.answers)
-        ? model.appState.answers : []
+        ? model.appState.answers : [],
+      lastAnsweredAt: model && model.appState ? model.appState.lastAnsweredAt : undefined,
+      completedAt: model && model.appState ? model.appState.completedAt : undefined
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   } catch (e) {
@@ -31,6 +40,15 @@ function readBackup() {
   }
 }
 
+function _isComplete(answers) {
+  if (!model || !model.questions) return false;
+  if (!answers || answers.length < model.questions.length) return false;
+  for (var i = 0; i < model.questions.length; i++) {
+    if (!(answers[i] === 0 || answers[i] === 1)) return false;
+  }
+  return true;
+}
+
 // Registrer svar og flytt telleren til neste spørsmål. Tar backup.
 function registerAnswer(questionIndex, answerIndex /* 0 eller 1 */) {
   if (!model || !model.appState) {
@@ -46,11 +64,17 @@ function registerAnswer(questionIndex, answerIndex /* 0 eller 1 */) {
   // Sett svaret
   if (!Array.isArray(model.appState.answers)) model.appState.answers = [];
   model.appState.answers[questionIndex] = answerIndex;
+  model.appState.lastAnsweredAt = new Date().toISOString();
 
   // Flytt videre til neste spørsmål
   var next = questionIndex + 1;
   if (typeof model.appState.currentIndex !== "number" || model.appState.currentIndex < next) {
     model.appState.currentIndex = next;
+  }
+
+  // Marker fullført hvis alle er besvart
+  if (_isComplete(model.appState.answers)) {
+    model.appState.completedAt = model.appState.completedAt || new Date().toISOString();
   }
 
   // Backup og re-render
@@ -74,7 +98,7 @@ function restart() {
   if (!model) {
     throw new Error("Global 'model' mangler.");
   }
-  model.appState = { currentIndex: 0, answers: [] };
+  model.appState = { currentIndex: 0, answers: [], lastAnsweredAt: undefined, completedAt: undefined };
   deleteBackup();
   if (typeof render === "function") render();
 }
