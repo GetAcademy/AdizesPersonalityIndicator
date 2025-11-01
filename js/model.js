@@ -1,4 +1,8 @@
 const model = {
+  appState: {
+    currentIndex: 0,   // peker på "neste" spørsmål som skal besvares
+    answers: []        // answers[i] = 0 eller 1 (brukerens valg for spørsmål i)
+  },
   traitDescriptions: {
     P: "Produsent",
     A: "Administrator",
