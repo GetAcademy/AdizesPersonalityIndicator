@@ -7,7 +7,7 @@ body {
 }
 
 main {
-  max-width: 700px;
+  max-width: 950px;
   margin: 40px auto;
   background: white;
   border-radius: 12px;
@@ -42,7 +42,6 @@ button:hover {
   background: #e9ecef;
   border-radius: 8px;
   cursor: pointer;
-  user-select: none;
 }
 
 .option:hover {
@@ -54,6 +53,17 @@ button:hover {
 }
 
 .trait-result {
-  font-size: 1.2rem;
-  margin: 0.5rem 0;
+  font-size: 1.1rem;
+  margin: 0.35rem 0;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+}
+@media (min-width: 860px) {
+  .grid-2 {
+    grid-template-columns: 1fr 1fr;
+  }
 }
