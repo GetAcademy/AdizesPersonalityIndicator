@@ -88,10 +88,10 @@ function copyPromptAndOpen(prompt) {
   navigator.clipboard.writeText(prompt).then(function() {
     // Åpne ChatGPT i ny fane. Bruker limer inn selv.
     window.open("https://chat.openai.com", "_blank");
-    alert("Prompten er kopiert. Lim den inn i ChatGPT-vinduet og trykk Enter.");
+    //alert("Prompten er kopiert. Lim den inn i ChatGPT-vinduet og trykk Enter.");
   }).catch(function() {
     // Fallback: vis prompten i en prompt-boks (ikke ideelt, men bedre enn ingenting)
-    const ok = confirm("Klarte ikke kopiere automatisk. Vil du åpne ChatGPT nå? Du kan lime inn manuelt.");
+    const ok = confirm("Klarte ikke kopiere automatisk. Vil du åpne ChatGPT nå? Du kan kopiere og lime inn manuelt.");
     if (ok) window.open("https://chat.openai.com", "_blank");
   });
 }
